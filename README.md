@@ -3,8 +3,12 @@
 ## Instructions
 ```python
 pip install -r requirements.txt
+
+# Create your credentials
+# https://developers.google.com/youtube/v3/quickstart/python
+python3 create_youtube_api_credentials.py
+
 jupyter notebook
-# Open in browser
 ```
 
 ## [copy_youtube_playlists](copy_youtube_playlists.ipynb)
