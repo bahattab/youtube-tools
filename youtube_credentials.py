@@ -22,6 +22,7 @@ from oauth2client.tools import argparser, run_flow
 # For more information about the client_secrets.json file format, see:
 #    https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
 CLIENT_SECRETS_FILE = "data/client_secrets.json"
+CLIENT_OAUTH_FILE = "data/youtube-oauth2.json"
 
 # This variable defines a message to display if the CLIENT_SECRETS_FILE is
 # missing.
@@ -46,13 +47,21 @@ YOUTUBE_READ_WRITE_SCOPE = "https://www.googleapis.com/auth/youtube"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
-flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE, message=MISSING_CLIENT_SECRETS_MESSAGE, scope=YOUTUBE_READ_WRITE_SCOPE)
+def get_credentials():
+    flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE, message=MISSING_CLIENT_SECRETS_MESSAGE, scope=YOUTUBE_READ_WRITE_SCOPE)
+    storage = Storage(CLIENT_OAUTH_FILE)
+    credentials = storage.get()
 
-storage = Storage("data/youtube-oauth2.json")
-credentials = storage.get()
+    if credentials is None or credentials.invalid:
+        flags = argparser.parse_args()
+        credentials = run_flow(flow, storage, flags)
 
-if credentials is None or credentials.invalid:
-    flags = argparser.parse_args()
-    credentials = run_flow(flow, storage, flags)
-else:
-    print('Your credentials are valid! :)')
+    return credentials
+
+def get_youtube(credentials = None):
+    if credentials is None:
+        credentials = get_credentials()
+    return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, http=credentials.authorize(httplib2.Http()))
+
+if __name__ == '__main__':
+    get_credentials()

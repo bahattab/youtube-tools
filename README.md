@@ -6,7 +6,7 @@ pip install -r requirements.txt
 
 # Create your credentials
 # https://developers.google.com/youtube/v3/quickstart/python
-python3 create_youtube_api_credentials.py
+python3 youtube_credentials.py
 
 jupyter notebook
 ```
